@@ -1,0 +1,41 @@
+name: update-counter
+
+# Runs on a schedule (daily) and can also be triggered manually
+on:
+  schedule:
+    - cron: '0 3 * * *'   # every day at 03:00 UTC
+  workflow_dispatch:      # allow manual "Run workflow" button
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run counter fetcher
+        env:
+          MY_USER: ${{ secrets.MY_USER }}
+          MY_PASS: ${{ secrets.MY_PASS }}
+        run: python3 fetch_counter.py
+
+      - name: Commit updated count.json
+        run: |
+          git config user.name "blyfw-counter-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add count.json
+          # Commit only if there is a change
+          if git diff --cached --quiet; then
+            echo "No change in count.json"
+          else
+            git commit -m "chore: update counter $(date -u +%Y-%m-%d)"
+            git push
+          fi
