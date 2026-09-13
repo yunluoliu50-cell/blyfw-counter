@@ -1,7 +1,7 @@
 {
-  "total": 29623,
+  "total": 30560,
   "unit": "次",
   "label": "历史启动",
-  "updated_at": "2026-09-12 07:42:49",
+  "updated_at": "2026-09-13 08:02:01",
   "source": "geo_api?range=all"
 }
